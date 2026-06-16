@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -9,7 +10,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
-import { CATEGORY_STOCK } from '../lib/data'
+import { CATEGORY_STOCK, type CategoryStock } from '../lib/data'
+import { fetchCategoryStock } from '../lib/queries'
 
 // Color scales from red (low stock) to neon green (healthy).
 function colorFor(level: number) {
@@ -19,10 +21,24 @@ function colorFor(level: number) {
 }
 
 export default function CategoryBars() {
+  // Seed with mock data so there's no empty flash, then hydrate from the
+  // data layer (Supabase when configured, mock otherwise).
+  const [data, setData] = useState<CategoryStock[]>(CATEGORY_STOCK)
+
+  useEffect(() => {
+    let active = true
+    fetchCategoryStock().then((rows) => {
+      if (active && rows.length) setData(rows)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <ResponsiveContainer width="100%" height={320}>
       <BarChart
-        data={CATEGORY_STOCK}
+        data={data}
         layout="vertical"
         margin={{ top: 6, right: 16, left: 24, bottom: 0 }}
       >
@@ -45,7 +61,7 @@ export default function CategoryBars() {
           }}
         />
         <Bar dataKey="level" radius={[0, 8, 8, 0]} barSize={22}>
-          {CATEGORY_STOCK.map((entry, i) => (
+          {data.map((entry, i) => (
             <Cell key={i} fill={colorFor(entry.level)} />
           ))}
         </Bar>

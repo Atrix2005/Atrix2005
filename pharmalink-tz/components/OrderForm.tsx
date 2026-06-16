@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { YStack, XStack, Input, Text, Button as TButton } from 'tamagui'
 import { MEDICINE_TYPES, SUPPLIERS } from '../lib/data'
-import { CheckCircle2, Rocket } from 'lucide-react'
+import { placeOrder } from '../lib/queries'
+import { CheckCircle2, Rocket, Loader2 } from 'lucide-react'
 
 const selectStyle: React.CSSProperties = {
   height: 48,
@@ -22,10 +23,21 @@ export default function OrderForm() {
   const [supplier, setSupplier] = useState(SUPPLIERS[0])
   const [qty, setQty] = useState('5000')
   const [placed, setPlaced] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [note, setNote] = useState('')
 
-  function submit() {
+  async function submit() {
+    if (loading) return
+    setLoading(true)
+    const result = await placeOrder({
+      medicine,
+      quantity: Number(qty) || 0,
+      supplier,
+    })
+    setLoading(false)
     setPlaced(true)
-    setTimeout(() => setPlaced(false), 4200)
+    setNote(result.message)
+    setTimeout(() => setPlaced(false), 5000)
   }
 
   return (
@@ -90,11 +102,22 @@ export default function OrderForm() {
         hoverStyle={{ scale: 1.02, backgroundColor: '$primaryHover' }}
         pressStyle={{ scale: 0.98 }}
         onPress={submit}
-        icon={placed ? <CheckCircle2 size={20} /> : <Rocket size={20} />}
+        disabled={loading}
+        icon={
+          loading ? (
+            <Loader2 size={20} />
+          ) : placed ? (
+            <CheckCircle2 size={20} />
+          ) : (
+            <Rocket size={20} />
+          )
+        }
       >
-        {placed
-          ? 'ORDER PLACED — MV DAR MEDICINE DEPARTS IN 47 MIN'
-          : `CONFIRM ORDER: ${qty || 0} BOXES OF ${medicine.toUpperCase()}`}
+        {loading
+          ? 'PLACING ORDER…'
+          : placed
+            ? 'ORDER PLACED — MV DAR MEDICINE DEPARTS IN 47 MIN'
+            : `CONFIRM ORDER: ${qty || 0} BOXES OF ${medicine.toUpperCase()}`}
       </TButton>
 
       {placed && (
@@ -107,7 +130,8 @@ export default function OrderForm() {
         >
           <CheckCircle2 size={18} color="#10B981" />
           <Text color="$color" fontSize={14}>
-            Confirmed with {supplier}. Live tracking enabled on the map above.
+            {note || `Confirmed with ${supplier}.`} Live tracking enabled on the
+            map above.
           </Text>
         </XStack>
       )}
