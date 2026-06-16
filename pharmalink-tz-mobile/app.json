@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "PharmaLink TZ",
+    "slug": "pharmalink-tz",
+    "version": "1.0.0",
+    "scheme": "pharmalinktz",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0A0A0A",
+    "splash": {
+      "backgroundColor": "#0A0A0A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "tz.pharmalink.app"
+    },
+    "android": {
+      "package": "tz.pharmalink.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0A0A"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
