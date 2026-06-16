@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import {
   LineChart,
   Line,
@@ -10,12 +11,27 @@ import {
   CartesianGrid,
   Legend,
 } from 'recharts'
-import { STOCK_TREND } from '../lib/data'
+import { STOCK_TREND, type StockPoint } from '../lib/data'
+import { fetchStockTrend } from '../lib/queries'
 
 export default function StockChart() {
+  // Seed with mock data to avoid an empty flash, then hydrate from the data
+  // layer (Supabase when configured, mock otherwise).
+  const [data, setData] = useState<StockPoint[]>(STOCK_TREND)
+
+  useEffect(() => {
+    let active = true
+    fetchStockTrend().then((rows) => {
+      if (active && rows.length) setData(rows)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <ResponsiveContainer width="100%" height={320}>
-      <LineChart data={STOCK_TREND} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
         <defs>
           <linearGradient id="glowGreen" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#10B981" stopOpacity={0.9} />

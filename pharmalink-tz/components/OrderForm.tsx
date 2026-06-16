@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { YStack, XStack, Input, Text, Button as TButton } from 'tamagui'
 import { MEDICINE_TYPES, SUPPLIERS } from '../lib/data'
 import { placeOrder } from '../lib/queries'
-import { CheckCircle2, Rocket, Loader2 } from 'lucide-react'
+import { CheckCircle2, Rocket, Loader2, AlertTriangle } from 'lucide-react'
 
 const selectStyle: React.CSSProperties = {
   height: 48,
@@ -23,21 +23,29 @@ export default function OrderForm() {
   const [supplier, setSupplier] = useState(SUPPLIERS[0])
   const [qty, setQty] = useState('5000')
   const [placed, setPlaced] = useState(false)
+  const [failed, setFailed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [note, setNote] = useState('')
 
   async function submit() {
     if (loading) return
     setLoading(true)
+    setFailed(false)
+    setPlaced(false)
     const result = await placeOrder({
       medicine,
       quantity: Number(qty) || 0,
       supplier,
     })
     setLoading(false)
-    setPlaced(true)
     setNote(result.message)
-    setTimeout(() => setPlaced(false), 5000)
+    if (result.ok) {
+      setPlaced(true)
+      setTimeout(() => setPlaced(false), 5000)
+    } else {
+      setFailed(true)
+      setTimeout(() => setFailed(false), 5000)
+    }
   }
 
   return (
@@ -96,16 +104,18 @@ export default function OrderForm() {
 
       <TButton
         size="$5"
-        backgroundColor={placed ? '$accent' : '$primary'}
+        backgroundColor={failed ? '$red10' : placed ? '$accent' : '$primary'}
         color="black"
         fontWeight="900"
-        hoverStyle={{ scale: 1.02, backgroundColor: '$primaryHover' }}
+        hoverStyle={{ scale: 1.02, backgroundColor: failed ? '$red10' : '$primaryHover' }}
         pressStyle={{ scale: 0.98 }}
         onPress={submit}
         disabled={loading}
         icon={
           loading ? (
             <Loader2 size={20} />
+          ) : failed ? (
+            <AlertTriangle size={20} />
           ) : placed ? (
             <CheckCircle2 size={20} />
           ) : (
@@ -115,9 +125,11 @@ export default function OrderForm() {
       >
         {loading
           ? 'PLACING ORDER…'
-          : placed
-            ? 'ORDER PLACED — MV DAR MEDICINE DEPARTS IN 47 MIN'
-            : `CONFIRM ORDER: ${qty || 0} BOXES OF ${medicine.toUpperCase()}`}
+          : failed
+            ? 'ORDER FAILED — TAP TO RETRY'
+            : placed
+              ? 'ORDER PLACED — MV DAR MEDICINE DEPARTS IN 47 MIN'
+              : `CONFIRM ORDER: ${qty || 0} BOXES OF ${medicine.toUpperCase()}`}
       </TButton>
 
       {placed && (
@@ -132,6 +144,21 @@ export default function OrderForm() {
           <Text color="$color" fontSize={14}>
             {note || `Confirmed with ${supplier}.`} Live tracking enabled on the
             map above.
+          </Text>
+        </XStack>
+      )}
+
+      {failed && (
+        <XStack
+          gap="$2"
+          alignItems="center"
+          backgroundColor="$backgroundSoft"
+          borderRadius="$4"
+          padding="$3"
+        >
+          <AlertTriangle size={18} color="#F87171" />
+          <Text color="$color" fontSize={14}>
+            {note || 'Order failed — it could not be saved. Please try again.'}
           </Text>
         </XStack>
       )}

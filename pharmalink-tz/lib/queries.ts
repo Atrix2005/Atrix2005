@@ -92,10 +92,13 @@ export async function placeOrder(
       message: 'Order placed and saved.',
     }
   } catch {
+    // Supabase is configured but the insert failed (network / RLS / check
+    // constraint). Report a genuine failure — never claim a dropped order
+    // was placed.
     return {
-      ok: true,
+      ok: false,
       persisted: false,
-      message: 'Order confirmed locally (could not reach backend).',
+      message: 'Order failed — it could not be saved. Please try again.',
     }
   }
 }
