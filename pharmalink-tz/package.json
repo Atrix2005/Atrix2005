@@ -1,0 +1,43 @@
+{
+  "name": "pharmalink-tz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PharmaLink TZ - Pharmacy management platform connecting Tanzania pharmacies to East African suppliers with real-time port/ship tracking and live stock analytics.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.10",
+    "@supabase/supabase-js": "^2.45.4",
+    "@tamagui/config": "^1.116.16",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.11.9",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.454.0",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-native-web": "^0.19.13",
+    "recharts": "^2.13.0",
+    "tailwind-merge": "^2.5.4",
+    "tamagui": "^1.116.16",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.14",
+    "@types/node": "^20.16.13",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.169.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
